@@ -25,6 +25,7 @@ jobs:
           cd backend  # Navigate to the backend folder
           npm install  # Install dependencies for the backend
           npm run build --if-present  # Optional, if you have build steps
+          npm run test --if-present  # Optional, if you have tests
 
       - name: Zip artifact for deployment
         run: |
