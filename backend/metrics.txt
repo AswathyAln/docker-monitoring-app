@@ -1,0 +1,3 @@
+# HELP container_cpu_usage_seconds_total The total number of seconds the container's CPU has been running.
+# TYPE container_cpu_usage_seconds_total counter
+container_cpu_usage_seconds_total{container="nginx",image="nginx:latest"} 15.0

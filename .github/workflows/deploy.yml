@@ -1,0 +1,41 @@
+name: CI/CD for Docker Monitoring App
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        npm install
+
+    - name: Run tests (optional)
+      run: |
+        cd backend
+        npm test
+
+    - name: Deploy to Azure Static Web Apps
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: docker-monitoring-frontend  # Your Static Web App name
+        package: public  # Path to the frontend
+
+    - name: Deploy Node.js Backend to Azure App Service
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: docker-monitoring-backend  # Your App Service name
+        package: backend  # Path to the backend directory
