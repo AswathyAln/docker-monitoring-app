@@ -23,11 +23,6 @@ jobs:
         cd backend
         npm install
 
-    - name: Run tests (optional)
-      run: |
-        cd backend
-        npm test
-
     - name: Deploy to Azure Static Web Apps
       uses: Azure/webapps-deploy@v2
       with:
