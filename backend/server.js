@@ -1,18 +1,22 @@
 const express = require('express');
 const path = require('path');
 const Docker = require('dockerode');
+const cors = require('cors');  // Import the cors module
 const app = express();
-const port = process.env.PORT || 3001;  // Use environment variable for Azure deployment, fallback to 3001
+const port = process.env.PORT || 3001;  // Change the default port to 3001
 
 const docker = new Docker({ socketPath: '//./pipe/docker_engine' });
 // Connect to Docker
 
+// Enable CORS for all domains (or set it to specific domains)
+app.use(cors());
+
 // Serve static files from the 'public' folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Serve the root route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));  // Serve index.html from 'public' folder
+    res.sendFile(path.join(__dirname, '../public', 'index.html'));  // Serve index.html from 'public' folder
 });
 
 // Endpoint to get Docker container metrics
@@ -45,5 +49,5 @@ app.get('/metrics', async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-    console.log(`Backend server is running on http://localhost:${port}`);  // Log the correct port for debugging
+    console.log(`Backend server is running on http://localhost:${port}`);  // Updated to use port 3001
 });
