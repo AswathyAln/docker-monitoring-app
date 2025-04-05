@@ -1,29 +1,29 @@
 const express = require('express');
 const path = require('path');
-const Docker = require('dockerode'); // Import Dockerode
+const Docker = require('dockerode');
 const app = express();
-const port = process.env.PORT || 3001; // Use Azure's provided port or default to 3001
+const port = process.env.PORT || 3001;  // Use environment variable for Azure deployment, fallback to 3001
 
-const docker = new Docker(); // Connect to Docker
+const docker = new Docker({ socketPath: '//./pipe/docker_engine' });
+// Connect to Docker
 
-// Serve static files from the public folder
-app.use(express.static(path.join(__dirname, '../public')));
+// Serve static files from the 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve the root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));  // Serve index.html from 'public' folder
+});
 
 // Endpoint to get Docker container metrics
 app.get('/metrics', async (req, res) => {
     try {
-        // Get all containers (running or stopped)
         const containers = await docker.listContainers({ all: true });
 
-        // Get stats for each container
         const statsPromises = containers.map(async (containerInfo) => {
             const container = docker.getContainer(containerInfo.Id);
             const stats = await container.stats({ stream: false });
 
-            // Log the stats to see the raw data
-            console.log(stats); // Print out each container's stats
-
-            // Return container metrics, handle missing data
             return {
                 id: containerInfo.Id,
                 name: containerInfo.Names[0],
@@ -33,11 +33,10 @@ app.get('/metrics', async (req, res) => {
             };
         });
 
-        // Wait for all stats
         const stats = await Promise.all(statsPromises);
 
         res.set('Content-Type', 'application/json');
-        res.send(JSON.stringify(stats, null, 2)); // Send the metrics as JSON
+        res.send(JSON.stringify(stats, null, 2));
     } catch (err) {
         console.error('Error retrieving Docker metrics:', err.message);
         res.status(500).send('Error retrieving Docker metrics: ' + err.message);
@@ -46,5 +45,5 @@ app.get('/metrics', async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-    console.log(`Backend server is running on http://localhost:${port}`);
+    console.log(`Backend server is running on http://localhost:${port}`);  // Log the correct port for debugging
 });
