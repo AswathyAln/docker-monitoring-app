@@ -1,7 +1,7 @@
 async function fetchMetrics() {
     try {
         // Fetch the metrics from your backend
-        let response = await fetch("http://localhost:3001/metrics");
+        let response = await fetch("https://docker-monitoring-backend-exfde3b8bfafgtae.canadacentral-01.azurewebsites.net/metrics");
 
         // Parse the JSON response
         let data = await response.json();
